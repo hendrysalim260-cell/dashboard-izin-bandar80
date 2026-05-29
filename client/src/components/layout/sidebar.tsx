@@ -1,0 +1,261 @@
+import { useState } from "react";
+import { useLocation } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  LayoutDashboard, ChevronDown, ChevronRight, ChevronLeft,
+  Coffee, Briefcase, UserMinus, History,
+  Settings, BarChart2, Shield, Database, Settings2, ShieldCheck, ClipboardList, PanelLeftClose, PanelLeftOpen, Sun,
+} from "lucide-react";
+import bandar80Logo from "@assets/bandar80_logo.png";
+
+export function Sidebar() {
+  const [location, navigate] = useLocation();
+  const { user } = useAuth();
+  const [staffMenuOpen, setStaffMenuOpen] = useState(
+    ["/izin", "/jobdesk", "/staff-cuti", "/shift-kerja"].includes(location)
+  );
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem("sidebar-collapsed") === "true");
+
+  if (!user) return null;
+
+  const isActive = (href: string) => location === href;
+  const isStaffMenuActive = ["/izin", "/jobdesk", "/staff-cuti", "/shift-kerja"].includes(location);
+
+  const toggle = () => {
+    setCollapsed(prev => {
+      const next = !prev;
+      localStorage.setItem("sidebar-collapsed", String(next));
+      return next;
+    });
+  };
+
+  return (
+    <>
+      {/* Sidebar */}
+      <aside
+        className={`hidden md:flex flex-col shrink-0 border-r border-white/5 bg-background/95 backdrop-blur-xl h-screen sticky top-0 overflow-hidden transition-all duration-300 ${
+          collapsed ? "w-0 border-r-0" : "w-56"
+        }`}
+      >
+        <div className="w-56 flex flex-col h-full">
+          {/* Logo + Collapse Button */}
+          <div className="flex flex-col border-b border-white/5">
+            <div className="px-4 pt-4 pb-2">
+              <img src={bandar80Logo} alt="BANDAR80 Logo" className="w-full h-auto object-contain transition-transform duration-300 hover:scale-[1.02]" />
+            </div>
+            <div className="flex items-center justify-end px-4 pb-3">
+              <button
+                onClick={toggle}
+                className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all"
+                title="Sembunyikan sidebar"
+                data-testid="button-sidebar-collapse"
+              >
+                <PanelLeftClose className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Nav */}
+          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+            {/* Dashboard (Home) */}
+            <button
+              onClick={() => navigate("/")}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                isActive("/")
+                  ? "bg-primary/20 text-primary border border-primary/20"
+                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+              }`}
+              data-testid="sidebar-dashboard"
+            >
+              <LayoutDashboard className="w-4 h-4 shrink-0" />
+              Dashboard
+            </button>
+
+            {/* Staff & Izin Dropdown */}
+            <div>
+              <button
+                onClick={() => setStaffMenuOpen(prev => !prev)}
+                className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  isStaffMenuActive || staffMenuOpen
+                    ? "bg-white/5 text-foreground"
+                    : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                }`}
+                data-testid="sidebar-staff-dropdown"
+              >
+                <span className="flex items-center gap-3">
+                  <Briefcase className="w-4 h-4 shrink-0" />
+                  Staff & Izin
+                </span>
+                {staffMenuOpen ? (
+                  <ChevronDown className="w-3.5 h-3.5 shrink-0" />
+                ) : (
+                  <ChevronRight className="w-3.5 h-3.5 shrink-0" />
+                )}
+              </button>
+
+              {staffMenuOpen && (
+                <div className="mt-1 ml-3 pl-3 border-l border-white/10 space-y-0.5">
+                  <button
+                    onClick={() => navigate("/izin")}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
+                      isActive("/izin")
+                        ? "bg-primary/15 text-primary"
+                        : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                    }`}
+                    data-testid="sidebar-izin-staff"
+                  >
+                    <ClipboardList className="w-3.5 h-3.5 shrink-0" />
+                    Izin Staff
+                  </button>
+                  <button
+                    onClick={() => navigate("/jobdesk")}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
+                      isActive("/jobdesk")
+                        ? "bg-primary/15 text-primary"
+                        : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                    }`}
+                    data-testid="sidebar-jobdesk-staff"
+                  >
+                    <Briefcase className="w-3.5 h-3.5 shrink-0" />
+                    Jobdesk Staff
+                  </button>
+                  <button
+                    onClick={() => navigate("/staff-cuti")}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
+                      isActive("/staff-cuti")
+                        ? "bg-primary/15 text-primary"
+                        : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                    }`}
+                    data-testid="sidebar-staff-cuti"
+                  >
+                    <UserMinus className="w-3.5 h-3.5 shrink-0" />
+                    Staff Cuti
+                  </button>
+                  <button
+                    onClick={() => navigate("/shift-kerja")}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
+                      isActive("/shift-kerja")
+                        ? "bg-primary/15 text-primary"
+                        : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                    }`}
+                    data-testid="sidebar-shift-kerja"
+                  >
+                    <Sun className="w-3.5 h-3.5 shrink-0" />
+                    Shift Kerja
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Riwayat Izin */}
+            <button
+              onClick={() => navigate("/history")}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                isActive("/history")
+                  ? "bg-primary/20 text-primary border border-primary/20"
+                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+              }`}
+              data-testid="sidebar-history"
+            >
+              <History className="w-4 h-4 shrink-0" />
+              Riwayat Izin
+            </button>
+
+            {/* Admin Only */}
+            {user.role === "admin" && (
+              <>
+                <div className="pt-3 pb-1">
+                  <p className="text-[10px] text-muted-foreground/60 uppercase tracking-wider font-semibold px-3">Admin</p>
+                </div>
+                <button
+                  onClick={() => navigate("/analytics")}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    isActive("/analytics")
+                      ? "bg-primary/20 text-primary border border-primary/20"
+                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  }`}
+                  data-testid="sidebar-analytics"
+                >
+                  <BarChart2 className="w-4 h-4 shrink-0" />
+                  Analytics
+                </button>
+                <button
+                  onClick={() => navigate("/audit-log")}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    isActive("/audit-log")
+                      ? "bg-primary/20 text-primary border border-primary/20"
+                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  }`}
+                  data-testid="sidebar-audit"
+                >
+                  <Shield className="w-4 h-4 shrink-0" />
+                  Audit Log
+                </button>
+                <button
+                  onClick={() => navigate("/leave-rules")}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    isActive("/leave-rules")
+                      ? "bg-primary/20 text-primary border border-primary/20"
+                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  }`}
+                  data-testid="sidebar-leave-rules"
+                >
+                  <Settings2 className="w-4 h-4 shrink-0" />
+                  Peraturan Izin
+                </button>
+                <button
+                  onClick={() => navigate("/backup")}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    isActive("/backup")
+                      ? "bg-primary/20 text-primary border border-primary/20"
+                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  }`}
+                  data-testid="sidebar-backup"
+                >
+                  <Database className="w-4 h-4 shrink-0" />
+                  Backup Data
+                </button>
+                <button
+                  onClick={() => navigate("/permissions")}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    isActive("/permissions")
+                      ? "bg-primary/20 text-primary border border-primary/20"
+                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  }`}
+                  data-testid="sidebar-permissions"
+                >
+                  <ShieldCheck className="w-4 h-4 shrink-0" />
+                  Izin Edit Staff
+                </button>
+                <button
+                  onClick={() => navigate("/settings")}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    isActive("/settings")
+                      ? "bg-primary/20 text-primary border border-primary/20"
+                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  }`}
+                  data-testid="sidebar-settings"
+                >
+                  <Settings className="w-4 h-4 shrink-0" />
+                  Pengaturan
+                </button>
+              </>
+            )}
+          </nav>
+        </div>
+      </aside>
+
+      {/* Floating expand button — shown only when sidebar is collapsed */}
+      {collapsed && (
+        <button
+          onClick={toggle}
+          className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-50 items-center justify-center w-6 h-14 bg-background/95 border border-white/10 border-l-0 rounded-r-xl text-muted-foreground hover:text-primary hover:border-primary/30 transition-all shadow-lg"
+          title="Tampilkan sidebar"
+          data-testid="button-sidebar-expand"
+        >
+          <PanelLeftOpen className="w-3.5 h-3.5" />
+        </button>
+      )}
+    </>
+  );
+}
