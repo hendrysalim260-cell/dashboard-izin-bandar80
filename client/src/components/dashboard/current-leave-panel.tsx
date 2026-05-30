@@ -7,26 +7,51 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, UserCheck, AlertTriangle } from "lucide-react";
 import { useLeaveDuration } from "@/hooks/use-leave-settings";
 
-function LiveTimer({ startTime, durationSeconds }: { startTime: Date | string; durationSeconds: number }) {
-  const [elapsed, setElapsed] = useState(0);
+function LiveTimer({
+  startTime,
+  durationSeconds,
+}: {
+  startTime: Date | string;
+  durationSeconds: number;
+}) {
+  const [remaining, setRemaining] = useState(durationSeconds);
 
   useEffect(() => {
-    const calc = () => {
-      const diff = Math.floor((Date.now() - new Date(startTime).getTime()) / 1000);
-      setElapsed(diff);
-    };
-    calc();
-    const interval = setInterval(calc, 1000);
-    return () => clearInterval(interval);
-  }, [startTime]);
+    const updateTimer = () => {
+      const endTime =
+        new Date(startTime).getTime() +
+        durationSeconds * 1000;
 
-  const minutes = Math.floor(elapsed / 60);
-  const seconds = elapsed % 60;
-  const isOver = elapsed >= durationSeconds;
+      const remain = Math.max(
+        0,
+        Math.floor((endTime - Date.now()) / 1000)
+      );
+
+      setRemaining(remain);
+    };
+
+    updateTimer();
+
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+  }, [startTime, durationSeconds]);
+
+  const minutes = Math.floor(remaining / 60);
+  const seconds = remaining % 60;
+
+  const isOver = remaining <= 0;
 
   return (
-    <span className={`font-mono text-sm font-bold tabular-nums ${isOver ? "text-red-400" : "text-emerald-400"}`}>
-      {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+    <span
+      className={`font-mono text-sm font-bold tabular-nums ${
+        isOver
+          ? "text-red-400"
+          : "text-emerald-400"
+      }`}
+    >
+      {String(minutes).padStart(2, "0")}:
+      {String(seconds).padStart(2, "0")}
     </span>
   );
 }
