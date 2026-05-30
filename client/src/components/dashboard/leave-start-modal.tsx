@@ -30,20 +30,31 @@ export function LeaveStartModal({ open, leave, staff, onOpenChange }: LeaveStart
     if (!open || !leave) return;
 
     // Calculate remaining time from actual startTime instead of resetting to full duration
-    const startMs = new Date(leave.startTime).getTime();
-    const endMs = startMs + leaveDurationSeconds * 1000;
-    const remaining = Math.max(0, Math.floor((endMs - Date.now()) / 1000));
-    setTimeRemaining(remaining);
-    setClockInTime(null);
+const { mutate: clockIn, isPending: isClockingIn } = useClockIn();
 
-    const interval = setInterval(() => {
-      const r = Math.max(0, Math.floor((endMs - Date.now()) / 1000));
-      setTimeRemaining(r);
-      if (r <= 0) clearInterval(interval);
-    }, 1000);
+useEffect(() => {
+  if (!open || !leave) return;
 
-    return () => clearInterval(interval);
-  }, [open, leave, leaveDurationSeconds]);
+  setTimeRemaining(leaveDurationSeconds);
+  setClockInTime(null);
+
+  const interval = setInterval(() => {
+    setTimeRemaining(prev => {
+      if (prev <= 1) {
+        clearInterval(interval);
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, 1000);
+
+  return () => clearInterval(interval);
+}, [open, leave?.id, leaveDurationSeconds]);
+
+// Auto-close ...
+useEffect(() => {
+   ...
+});
 
   // Auto-close 2 seconds after successful clock-in
   useEffect(() => {
