@@ -89,16 +89,12 @@ export function StaffTable() {
     }
     isCreatingRef.current = true;
     createLeave(staffId, {
-onSuccess: (newLeave) => {
-  console.log("NEW LEAVE =", newLeave);
-  console.log("START TIME =", newLeave.startTime);
-  console.log("CLIENT NOW =", new Date().toISOString());
-
-  isCreatingRef.current = false;
-  setSelectedLeave(newLeave);
-  setSelectedStaff(staff);
-  setModalOpen(true);
-},
+      onSuccess: (newLeave) => {
+        isCreatingRef.current = false;
+        setSelectedLeave(newLeave);
+        setSelectedStaff(staff);
+        setModalOpen(true);
+      },
       onError: () => {
         isCreatingRef.current = false;
       },
