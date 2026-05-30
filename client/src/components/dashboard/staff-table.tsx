@@ -88,17 +88,20 @@ export function StaffTable() {
       return;
     }
     isCreatingRef.current = true;
-    createLeave(staffId, {
-      onSuccess: (newLeave) => {
-        isCreatingRef.current = false;
-        setSelectedLeave(newLeave);
-        setSelectedStaff(staff);
-        setModalOpen(true);
-      },
-      onError: () => {
-        isCreatingRef.current = false;
-      },
-    });
+createLeave(staffId, {
+  onSuccess: (newLeave) => {
+    console.log("NEW LEAVE =", newLeave);
+    console.log("START TIME =", newLeave.startTime);
+
+    isCreatingRef.current = false;
+    setSelectedLeave(newLeave);
+    setSelectedStaff(staff);
+    setModalOpen(true);
+  },
+  onError: () => {
+    isCreatingRef.current = false;
+  },
+});
   };
 
   const canClockIn = (staff: any) => {
