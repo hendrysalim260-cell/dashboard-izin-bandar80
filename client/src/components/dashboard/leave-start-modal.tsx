@@ -22,7 +22,6 @@ interface LeaveStartModalProps {
 
 export function LeaveStartModal({ open, leave, staff, onOpenChange }: LeaveStartModalProps) {
   const leaveDurationSeconds = useLeaveDuration();
-  console.log("SETTING =", leaveDurationSeconds);
   const [timeRemaining, setTimeRemaining] = useState<number>(leaveDurationSeconds);
   const [clockInTime, setClockInTime] = useState<Date | null>(null);
   const { mutate: clockIn, isPending: isClockingIn } = useClockIn();
@@ -32,12 +31,6 @@ export function LeaveStartModal({ open, leave, staff, onOpenChange }: LeaveStart
 
     // Calculate remaining time from actual startTime instead of resetting to full duration
     const startMs = new Date(leave.startTime).getTime();
-    console.log("START =", leave.startTime);
-console.log("NOW =", new Date().toISOString());
-console.log(
-  "SELISIH DETIK",
-  Math.floor((Date.now() - startMs) / 1000)
-);
     const endMs = startMs + leaveDurationSeconds * 1000;
     const remaining = Math.max(0, Math.floor((endMs - Date.now()) / 1000));
     setTimeRemaining(remaining);
