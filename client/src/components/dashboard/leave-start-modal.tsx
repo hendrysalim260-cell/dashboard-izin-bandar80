@@ -33,6 +33,9 @@ export function LeaveStartModal({ open, leave, staff, onOpenChange }: LeaveStart
     const startMs = new Date(leave.startTime).getTime();
     const endMs = startMs + leaveDurationSeconds * 1000;
     const remaining = Math.max(0, Math.floor((endMs - Date.now()) / 1000));
+console.log("remaining =", remaining);
+console.log("duration =", leaveDurationSeconds);
+console.log("start =", leave.startTime);    
     setTimeRemaining(remaining);
     setClockInTime(null);
 
