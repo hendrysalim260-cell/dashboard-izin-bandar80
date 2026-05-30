@@ -33,22 +33,8 @@ export function LeaveStartModal({ open, leave, staff, onOpenChange }: LeaveStart
     const startMs = new Date(leave.startTime).getTime();
     const endMs = startMs + leaveDurationSeconds * 1000;
     const remaining = Math.max(0, Math.floor((endMs - Date.now()) / 1000));
-console.log("remaining =", remaining);
-console.log("duration =", leaveDurationSeconds);
-console.log("start =", leave.startTime);
-
-console.log("NOW =", new Date().toISOString());
-
-const startTimeMs = new Date(leave.startTime).getTime();
-const nowMs = Date.now();
-
-console.log(
-  "SELISIH DETIK",
-  Math.floor((nowMs - startTimeMs) / 1000)
-);
-
-setTimeRemaining(remaining);
-setClockInTime(null);
+    setTimeRemaining(remaining);
+    setClockInTime(null);
 
     const interval = setInterval(() => {
       const r = Math.max(0, Math.floor((endMs - Date.now()) / 1000));
