@@ -192,10 +192,13 @@ export async function registerRoutes(
         }
       }
 
-      const newLeave = await storage.createLeave({
-        staffId: input.staffId,
-        date: today
-      });
+const clickTime = new Date();
+
+const newLeave = await storage.createLeave({
+  staffId: input.staffId,
+  date: today,
+  startTime: clickTime,
+});
       await logAudit(req.session.userId!, "START_LEAVE", `Staff ${staffRecord?.name || input.staffId} mulai izin`);
       res.status(201).json(newLeave);
     } catch (err) {
