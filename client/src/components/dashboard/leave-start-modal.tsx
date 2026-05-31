@@ -26,8 +26,13 @@ export function LeaveStartModal({ open, leave, staff, onOpenChange }: LeaveStart
   const [clockInTime, setClockInTime] = useState<Date | null>(null);
   const { mutate: clockIn, isPending: isClockingIn } = useClockIn();
 
-  useEffect(() => {
-    if (!open || !leave) return;
+useEffect(() => {
+  if (!open || !leave) return;
+
+  console.log("MODAL OPEN", new Date().toLocaleTimeString());
+  console.log("LEAVE START", leave.startTime);
+
+  const startMs = new Date(leave.startTime).getTime();
 
     // Calculate remaining time from actual startTime instead of resetting to full duration
     const startMs = new Date(leave.startTime).getTime();
