@@ -147,14 +147,7 @@ export function CurrentLeavePanel() {
 
                   {/* Timer */}
                   <div className="flex flex-col items-end gap-1 shrink-0">
-                    <LiveTimer
-  startTime={leave.startTime}
-  durationSeconds={
-    leave.durationSeconds ||
-    leave.duration * 60 ||
-    60
-  }
-/>
+                    <LiveTimer startTime={leave.startTime} durationSeconds={leaveDurationSeconds} />
                     {isOver && (
                       <div className="flex items-center gap-1 text-red-400">
                         <AlertTriangle className="w-2.5 h-2.5" />
