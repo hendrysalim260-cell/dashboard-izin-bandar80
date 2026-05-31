@@ -196,8 +196,13 @@ export async function registerRoutes(
         staffId: input.staffId,
         date: today
       });
-      await logAudit(req.session.userId!, "START_LEAVE", `Staff ${staffRecord?.name || input.staffId} mulai izin`);
+
+      // Return response immediately so the timer shown to staff starts at the full duration.
+      // Audit log is saved in the background and must not delay opening the izin modal.
       res.status(201).json(newLeave);
+
+      logAudit(req.session.userId!, "START_LEAVE", `Staff ${staffRecord?.name || input.staffId} mulai izin`)
+        .catch((auditErr) => console.error("Audit START_LEAVE error:", auditErr));
     } catch (err) {
       if (err instanceof z.ZodError) {
          return res.status(400).json({ message: err.errors[0].message });
