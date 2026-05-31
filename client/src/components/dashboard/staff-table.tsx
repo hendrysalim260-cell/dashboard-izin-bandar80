@@ -77,7 +77,43 @@ export function StaffTable() {
   const todayWib = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().split('T')[0];
   const todaysLeaves = leaves.filter(l => l.date === todayWib);
 
-  const handleLeave = (staffId: number, currentLeavesCount: number, staff: Staff) => {
+const handleLeave = (
+  staffId: number,
+  currentLeavesCount: number,
+  staff: Staff
+) => {
+  console.log("CLICK", new Date().toLocaleTimeString());
+
+  if (isCreatingRef.current) return;
+
+  if (currentLeavesCount >= maxLeaves) {
+    toast({
+      variant: "destructive",
+      title: "Limit Tercapai",
+      description: `Staff ini sudah mencapai batas maksimal ${maxLeaves}x izin hari ini.`,
+    });
+    return;
+  }
+
+  isCreatingRef.current = true;
+
+  createLeave(staffId, {
+    onSuccess: (newLeave) => {
+      console.log("SUCCESS", new Date().toLocaleTimeString());
+      console.log("STARTTIME", newLeave.startTime);
+
+      isCreatingRef.current = false;
+
+      setSelectedLeave(newLeave);
+      setSelectedStaff(staff);
+      setModalOpen(true);
+    },
+
+    onError: () => {
+      isCreatingRef.current = false;
+    },
+  });
+};
     if (isCreatingRef.current) return;
     if (currentLeavesCount >= maxLeaves) {
       toast({
