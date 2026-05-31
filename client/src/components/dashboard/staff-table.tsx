@@ -91,7 +91,14 @@ export function StaffTable() {
     createLeave(staffId, {
       onSuccess: (newLeave) => {
         isCreatingRef.current = false;
-        setSelectedLeave(newLeave);
+
+        // Use the moment the modal is opened as the displayed start time.
+        // This prevents the modal from showing 01:50 when the saved API response/audit
+        // takes a few seconds after the staff clicks Mulai Izin.
+        setSelectedLeave({
+          ...newLeave,
+          startTime: new Date(),
+        } as Leave);
         setSelectedStaff(staff);
         setModalOpen(true);
       },
