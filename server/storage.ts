@@ -200,7 +200,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createLeave(insertLeave: InsertLeave & { date: string }): Promise<Leave> {
-    const leave = new LeaveModel(insertLeave);
+    // Set startTime explicitly at the moment the leave is saved.
+    // This avoids MongoDB/default timestamp being set too early when the request is delayed.
+    const leave = new LeaveModel({
+      ...insertLeave,
+      startTime: new Date(),
+    });
     await leave.save();
     return leave.toObject() as unknown as Leave;
   }
