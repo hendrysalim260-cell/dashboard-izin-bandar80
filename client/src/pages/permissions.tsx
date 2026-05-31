@@ -241,7 +241,7 @@ function PermissionRoleRow({ role, perm, allJobdesks, onSave, onDelete }: {
 export default function Permissions() {
   const { toast } = useToast();
 
-  const FIXED_JABATAN_ROLES = ["CS", "CS LINE", "KAPTEN", "KASIR"];
+  const FIXED_JABATAN_ROLES = ["CS LIVE CHAT", "CS LINE", "KAPTEN", "KASIR"];
   const { data: perms } = useQuery<StaffPermission[]>({ queryKey: ["/api/permissions"] });
 
   const saveMutation = useMutation({
