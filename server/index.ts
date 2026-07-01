@@ -16,14 +16,21 @@ app.use(
 app.use(express.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
-  const ua = req.headers["user-agent"] || "";
+  const ua = (req.headers["user-agent"] || "").toString();
 
-  const mobile =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(
-      ua
-    );
+  const mobileHint = req.headers["sec-ch-ua-mobile"];
+  const platform = (req.headers["sec-ch-ua-platform"] || "").toString();
 
-  if (mobile) {
+  const isDesktopOS =
+    /Windows|macOS|Linux/i.test(platform) ||
+    /Windows NT|Macintosh|X11|Linux x86_64/i.test(ua);
+
+  const isMobileUA =
+    /Android|iPhone|iPad|iPod|Mobile|Opera Mini|IEMobile|webOS|BlackBerry/i.test(ua);
+
+  const isMobileHint = mobileHint === "?1";
+
+  if (!isDesktopOS && (isMobileUA || isMobileHint)) {
     return res.status(403).send(`
       <!DOCTYPE html>
       <html>
@@ -38,7 +45,7 @@ app.use((req, res, next) => {
         font-family:Arial;
         background:#0f172a;
         color:white;">
-          <h2>☠️JANGAN LAGI YA DEK, SEKALI LAGI BONUSMU 100% !!!</h2>
+        <h2>Dashboard hanya dapat diakses melalui PC / Laptop</h2>
       </body>
       </html>
     `);
