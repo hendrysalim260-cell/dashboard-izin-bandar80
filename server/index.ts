@@ -45,7 +45,7 @@ app.use((req, res, next) => {
         font-family:Arial;
         background:#0f172a;
         color:white;">
-        <h2>Dashboard hanya dapat diakses melalui PC / Laptop</h2>
+        <h2>☠️☠️JANGAN DILAKUKAN LAGI, JANGAN KIRA DIAM TIDAK TAU☠️☠️</h2>
       </body>
       </html>
     `);
