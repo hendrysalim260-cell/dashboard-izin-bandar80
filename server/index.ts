@@ -38,7 +38,7 @@ app.use((req, res, next) => {
         font-family:Arial;
         background:#0f172a;
         color:white;">
-          <h2>JANGAN MANIPULASI JAM IZIN PAKE HP YA DEK!!!</h2>
+          <h2>☠️JANGAN LAGI YA DEK, SEKALI LAGI BONUSMU 100% !!!</h2>
       </body>
       </html>
     `);
