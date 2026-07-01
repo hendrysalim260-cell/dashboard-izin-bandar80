@@ -14,11 +14,26 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 
 type LoginForm = z.infer<typeof api.auth.login.input>;
 
 export default function Login() {
   const { login, isLoggingIn } = useAuth();
+
+  useEffect(() => {
+  const isTouch = navigator.maxTouchPoints > 0;
+
+  const isMobile =
+    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+  const isSmallScreen = window.screen.width < 1024;
+
+  if (isTouch || isMobile || isSmallScreen) {
+    alert("Dashboard hanya dapat diakses melalui Laptop / PC");
+    window.location.href = "about:blank";
+  }
+}, []);
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(api.auth.login.input),
