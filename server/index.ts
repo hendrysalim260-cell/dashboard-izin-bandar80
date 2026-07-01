@@ -15,6 +15,38 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
+app.use((req, res, next) => {
+  const ua = req.headers["user-agent"] || "";
+
+  const mobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(
+      ua
+    );
+
+  if (mobile) {
+    return res.status(403).send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Akses Ditolak</title>
+      </head>
+      <body style="
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        height:100vh;
+        font-family:Arial;
+        background:#0f172a;
+        color:white;">
+          <h2>Dashboard hanya dapat diakses melalui PC / Laptop</h2>
+      </body>
+      </html>
+    `);
+  }
+
+  next();
+});
+
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
