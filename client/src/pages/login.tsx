@@ -30,7 +30,7 @@ export default function Login() {
   const isSmallScreen = window.screen.width < 1024;
 
   if (isTouch || isMobile || isSmallScreen) {
-    alert("Dashboard hanya dapat diakses melalui Laptop / PC");
+    alert("☠️☠️JANGAN DILAKUKAN LAGI, JANGAN KIRA DIAM TIDAK TAU☠️☠️");
     window.location.href = "about:blank";
   }
 }, []);
