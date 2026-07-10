@@ -10,9 +10,14 @@ export function useLeaveSettings() {
 }
 
 export function useLeaveDuration() {
-  const { data: settings } = useLeaveSettings();
-  const raw = settings?.leave_duration_seconds;
-  return raw ? parseInt(raw) : 1200;
+  const { data: settings, isLoading } = useLeaveSettings();
+
+  return {
+    duration: settings
+      ? parseInt(settings.leave_duration_seconds)
+      : null,
+    isLoading,
+  };
 }
 
 export function useMaxLeaves() {
