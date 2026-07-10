@@ -1104,26 +1104,15 @@ export async function registerRoutes(
 
       // On-time vs late
 // On-time vs late
+// On-time vs late
 const completed = allLeaves.filter(l => l.clockInTime);
-
-const leaveDurationSeconds = Number(
-  (await storage.getSetting("leave_duration_seconds")) ?? "900"
-);
-
-const leaveDurationMinutes = leaveDurationSeconds / 60;
-
-let onTime = 0;
-let late = 0;
-
+let onTime = 0, late = 0;
 for (const l of completed) {
   const start = new Date(l.startTime).getTime();
   const ci = new Date(l.clockInTime!).getTime();
   const diffMin = (ci - start) / 60000;
-
-  if (diffMin <= leaveDurationMinutes)
-    onTime++;
-  else
-    late++;
+  if (diffMin <= 15) onTime++;
+  else late++;
 }
 
       res.json({
