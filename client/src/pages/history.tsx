@@ -38,10 +38,7 @@ import type { Leave, Staff, StaffPermission } from "@shared/schema";
 
 export default function History() {
   const { user } = useAuth();
-  const {
-  duration: leaveDurationSeconds,
-  isLoading: isLoadingDuration,
-} = useLeaveDuration();
+  const leaveDurationSeconds = useLeaveDuration();
   const { data: leaves = [], isLoading } = useLeaveHistory();
   const { mutate: deleteLeave, isPending: isDeletingLeave } = useDeleteLeave();
   const { mutate: updateClockIn } = useUpdateLeaveClockIn();
