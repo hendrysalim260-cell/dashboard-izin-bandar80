@@ -12,7 +12,7 @@ export function useLeaveSettings() {
 export function useLeaveDuration() {
   const { data: settings } = useLeaveSettings();
   const raw = settings?.leave_duration_seconds;
-  return raw ? parseInt(raw) : 900;
+  return raw ? parseInt(raw) : 1200;
 }
 
 export function useMaxLeaves() {
