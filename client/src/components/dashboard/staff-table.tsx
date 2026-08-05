@@ -1,7 +1,7 @@
 import { useStaff } from "@/hooks/use-staff";
 import { useLeaves, useCreateLeave, useResetStaffLimit } from "@/hooks/use-leaves";
 import { useAuth } from "@/hooks/use-auth";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -74,8 +74,23 @@ export function StaffTable() {
 
   if (!staffList || !leaves) return null;
 
-  const todayWib = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().split('T')[0];
-  const todaysLeaves = leaves.filter(l => l.date === todayWib);
+const todayWib = new Date(Date.now() + 7 * 60 * 60 * 1000)
+  .toISOString()
+  .split("T")[0];
+
+const todaysLeaves = leaves.filter(l => l.date === todayWib);
+
+const leaveMap = new Map<number, Leave[]>();
+
+for (const leave of todaysLeaves) {
+
+  if (!leaveMap.has(leave.staffId)) {
+    leaveMap.set(leave.staffId, []);
+  }
+
+  leaveMap.get(leave.staffId)!.push(leave);
+
+}
 
   const handleLeave = (staffId: number, currentLeavesCount: number, staff: Staff) => {
     if (isCreatingRef.current) return;
@@ -121,34 +136,54 @@ export function StaffTable() {
   const jobdeskOrder = ["CS LINE", "CS", "KAPTEN", "KASIR"];
   
   // Exclude staff that are on cuti — they only appear on the Staff Cuti page
+const {
+  activeStaffList,
+  filteredStaffList,
+  filteredGroupedByJobdesk,
+  sortedJobdesks,
+} = useMemo(() => {
+
   const activeStaffList = staffList.filter(s => !s.cutiStatus);
 
-  // Filter staff by search query
   const filteredStaffList = searchQuery.trim()
     ? activeStaffList.filter(staff =>
         staff.name.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : activeStaffList;
 
-  // Regroup by jabatan after filtering — normalize to UPPERCASE for consistent sort order
   const filteredGroupedByJobdesk = filteredStaffList.reduce((acc, staff) => {
     const key = (staff.jabatan || staff.jobdesk || "").toUpperCase();
+
     if (!acc[key]) {
       acc[key] = [];
     }
+
     acc[key].push(staff);
+
     return acc;
   }, {} as Record<string, Staff[]>);
 
-  // Sort jobdesks by custom order, then alphabetically
   const sortedJobdesks = Object.keys(filteredGroupedByJobdesk).sort((a, b) => {
+
     const aIndex = jobdeskOrder.indexOf(a);
     const bIndex = jobdeskOrder.indexOf(b);
+
     if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
     if (aIndex !== -1) return -1;
     if (bIndex !== -1) return 1;
+
     return a.localeCompare(b);
+
   });
+
+  return {
+    activeStaffList,
+    filteredStaffList,
+    filteredGroupedByJobdesk,
+    sortedJobdesks,
+  };
+
+}, [staffList, searchQuery]);
 
   const toggleJobdesk = (jobdesk: string) => {
     const newExpanded = new Set(expandedJobdesks);
@@ -160,8 +195,9 @@ export function StaffTable() {
     setExpandedJobdesks(newExpanded);
   };
 
-  const StaffRow = ({ staff }: { staff: Staff }) => {
-    const staffLeavesToday = todaysLeaves.filter(l => l.staffId === staff.id);
+const StaffRow = ({ staff }: { staff: Staff }) => {
+
+    const staffLeavesToday = leaveMap.get(staff.id) || [];
     const leavesCount = staffLeavesToday.length;
     const isLimitReached = leavesCount >= maxLeaves;
     const hasActiveLeave = staffLeavesToday.some(l => !l.clockInTime);
