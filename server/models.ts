@@ -67,6 +67,17 @@ const LeaveSchema = new mongoose.Schema({
 LeaveSchema.index({ date: 1 });
 LeaveSchema.index({ staffId: 1 });
 LeaveSchema.index({ date: 1, staffId: 1 });
+LeaveSchema.index({ date: 1, clockInTime: 1 });
+
+LeaveSchema.index({ clockInTime: 1 });
+LeaveSchema.index({ startTime: 1 });
+
+LeaveSchema.index(
+  { startTime: 1 },
+  {
+    expireAfterSeconds: 60 * 60 * 24 * 21
+  }
+);
 
 LeaveSchema.pre("save", async function() {
   if (this.isNew && !this.id) {
@@ -85,6 +96,13 @@ const AuditLogSchema = new mongoose.Schema({
 });
 
 AuditLogSchema.index({ createdAt: -1 });
+
+AuditLogSchema.index(
+  { createdAt: 1 },
+  {
+    expireAfterSeconds: 60 * 60 * 24 * 21
+  }
+);
 
 AuditLogSchema.pre("save", async function() {
   if (this.isNew && !this.id) {
