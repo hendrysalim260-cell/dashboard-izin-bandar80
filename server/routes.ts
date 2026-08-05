@@ -177,10 +177,15 @@ export async function registerRoutes(
       if (staffRecord && staffJabatan && jobdeskLimits[staffJabatan]) {
         const maxConcurrent = jobdeskLimits[staffJabatan];
         const activeLeavesToday = await storage.getActiveLeavesByDate(today);
+        const allStaff = await storage.getStaff();
+
+const staffMap = new Map(
+    allStaff.map(s => [s.id, s])
+);
         let concurrentCount = 0;
         
         for (const l of activeLeavesToday) {
-          const staff = await storage.getStaffById(Number(l.staffId));
+          const staff = staffMap.get(Number(l.staffId));
           const sJabatan = staff?.jabatan || staff?.jobdesk;
           if (sJabatan === staffJabatan) {
             concurrentCount++;
@@ -1057,19 +1062,26 @@ export async function registerRoutes(
   // GET /api/analytics
   app.get("/api/analytics", async (req, res) => {
     if (!req.session.userId) return res.status(401).json({ message: "Unauthorized" });
-    try {
-      const allLeaves = await storage.getLeaves();
-      const allStaff = await storage.getStaff();
-      
-      const staffMap = new Map();
-      for (const s of allStaff) {
-        staffMap.set(s.id, s);
-      }
-      
-      const today = getWIBDate();
+try {
+
+  const [allLeaves, allStaff] = await Promise.all([
+    storage.getLeaves(),
+    storage.getStaff()
+  ]);
+
+  const staffMap = new Map();
+
+  for (const s of allStaff) {
+    staffMap.set(s.id, s);
+  }
+
+  const today = getWIBDate();
 
       // Today's leaves
       const todayLeaves = allLeaves.filter(l => l.date === today);
+
+  const pendingLeaves = allLeaves.filter(l => !l.clockInTime);
+const completedLeaves = allLeaves.filter(l => l.clockInTime);
 
       // Last 7 days trend
       const last7Days: { date: string; count: number }[] = [];
@@ -1105,14 +1117,15 @@ export async function registerRoutes(
       // On-time vs late
 // On-time vs late
 // On-time vs late
-const completed = allLeaves.filter(l => l.clockInTime);
 let onTime = 0, late = 0;
-for (const l of completed) {
-  const start = new Date(l.startTime).getTime();
-  const ci = new Date(l.clockInTime!).getTime();
-  const diffMin = (ci - start) / 60000;
-  if (diffMin <= 15) onTime++;
-  else late++;
+
+for (const l of completedLeaves) {
+    const start = new Date(l.startTime).getTime();
+    const ci = new Date(l.clockInTime!).getTime();
+    const diffMin = (ci - start) / 60000;
+
+    if (diffMin <= 15) onTime++;
+    else late++;
 }
 
       res.json({
@@ -1123,7 +1136,7 @@ for (const l of completed) {
         top5Staff: top5,
         onTimeCount: onTime,
         lateCount: late,
-        pendingCount: allLeaves.filter(l => !l.clockInTime).length,
+        pendingCount: pendingLeaves.length,
       });
     } catch {
       res.status(500).json({ message: "Internal server error" });
