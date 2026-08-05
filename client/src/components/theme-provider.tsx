@@ -215,7 +215,36 @@ export function applyBgImage(bgImage: string | null | undefined) {
 }
 
 export function ThemeApplier() {
-  const { data } = useQuery<{ bg: string | null; primary: string | null; bgImage: string | null }>({
+
+  useEffect(() => {
+
+    try {
+
+      const bgImage = localStorage.getItem("theme_bg_image");
+
+      if (bgImage) {
+        applyBgImage(bgImage);
+      }
+
+      const cssVars = localStorage.getItem("theme_css_vars");
+
+      if (cssVars) {
+
+        const vars = JSON.parse(cssVars);
+
+        const root = document.documentElement;
+
+        Object.entries(vars).forEach(([key, value]) => {
+          root.style.setProperty(key, String(value));
+        });
+
+      }
+
+    } catch {}
+
+  }, []);
+
+  const { data } = useQuery({
     queryKey: ["/api/theme-settings"],
     staleTime: 0,
   });
