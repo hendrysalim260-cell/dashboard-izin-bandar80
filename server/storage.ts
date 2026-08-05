@@ -176,7 +176,7 @@ export class DatabaseStorage implements IStorage {
 async getLeaves(): Promise<Leave[]> {
 
     const limitDate = new Date();
-    limitDate.setDate(limitDate.getDate() - 21);
+    limitDate.setDate(limitDate.getDate() - 14);
 
     return await LeaveModel.find({
         startTime: {
@@ -193,17 +193,28 @@ async getLeaves(): Promise<Leave[]> {
     return leave ? (leave as unknown as Leave) : undefined;
   }
 
-  async getLeavesByDate(date: string): Promise<Leave[]> {
-    return await LeaveModel.find({ date }).lean() as unknown as Leave[];
-  }
+async getLeavesByDate(date: string): Promise<Leave[]> {
+  return await LeaveModel.find({ date })
+    .sort({ startTime: -1 })
+    .lean() as unknown as Leave[];
+}
 
-  async getLeavesByStaffAndDate(staffId: number, date: string): Promise<Leave[]> {
-    return await LeaveModel.find({ staffId, date }).lean() as unknown as Leave[];
-  }
+async getLeavesByStaffAndDate(staffId: number, date: string): Promise<Leave[]> {
+  return await LeaveModel.find({ staffId, date })
+    .sort({ startTime: -1 })
+    .lean() as unknown as Leave[];
+}
 
-  async getActiveLeavesByDate(date: string): Promise<Leave[]> {
-    return await LeaveModel.find({ date, clockInTime: null }).lean() as unknown as Leave[];
-  }
+async getActiveLeavesByDate(date: string): Promise<Leave[]> {
+
+    return await LeaveModel.find({
+        date,
+        clockInTime: null
+    })
+    .sort({ startTime: -1 })
+    .lean() as unknown as Leave[];
+
+}
 
   async deleteLeavesByDate(date: string): Promise<number> {
     const result = await LeaveModel.deleteMany({ date });
@@ -269,7 +280,7 @@ async getLeaves(): Promise<Leave[]> {
 async getAuditLogs(): Promise<AuditLog[]> {
 
     const limitDate = new Date();
-    limitDate.setDate(limitDate.getDate() - 21);
+    limitDate.setDate(limitDate.getDate() - 14);
 
     return await AuditLogModel.find({
         createdAt: {
