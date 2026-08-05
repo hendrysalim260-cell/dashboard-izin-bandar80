@@ -75,7 +75,7 @@ LeaveSchema.index({ startTime: 1 });
 LeaveSchema.index(
   { startTime: 1 },
   {
-    expireAfterSeconds: 60 * 60 * 24 * 21
+    expireAfterSeconds: 60 * 60 * 24 * 14
   }
 );
 
@@ -100,7 +100,7 @@ AuditLogSchema.index({ createdAt: -1 });
 AuditLogSchema.index(
   { createdAt: 1 },
   {
-    expireAfterSeconds: 60 * 60 * 24 * 21
+    expireAfterSeconds: 60 * 60 * 24 * 14
   }
 );
 
