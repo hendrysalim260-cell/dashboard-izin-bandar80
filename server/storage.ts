@@ -173,9 +173,20 @@ export class DatabaseStorage implements IStorage {
     return staff as unknown as Staff;
   }
 
-  async getLeaves(): Promise<Leave[]> {
-    return await LeaveModel.find().lean() as unknown as Leave[];
-  }
+async getLeaves(): Promise<Leave[]> {
+
+    const limitDate = new Date();
+    limitDate.setDate(limitDate.getDate() - 21);
+
+    return await LeaveModel.find({
+        startTime: {
+            $gte: limitDate
+        }
+    })
+    .sort({ startTime: -1 })
+    .lean() as unknown as Leave[];
+
+}
 
   async getLeaveById(id: number): Promise<Leave | undefined> {
     const leave = await LeaveModel.findOne({ id }).lean();
@@ -255,9 +266,20 @@ export class DatabaseStorage implements IStorage {
     return result.deletedCount || 0;
   }
 
-  async getAuditLogs(): Promise<AuditLog[]> {
-    return await AuditLogModel.find().sort({ createdAt: -1 }).lean() as unknown as AuditLog[];
-  }
+async getAuditLogs(): Promise<AuditLog[]> {
+
+    const limitDate = new Date();
+    limitDate.setDate(limitDate.getDate() - 21);
+
+    return await AuditLogModel.find({
+        createdAt: {
+            $gte: limitDate
+        }
+    })
+    .sort({ createdAt: -1 })
+    .lean() as unknown as AuditLog[];
+
+}
 
   async createAuditLog(log: InsertAuditLog): Promise<AuditLog> {
     const entry = new AuditLogModel(log);
