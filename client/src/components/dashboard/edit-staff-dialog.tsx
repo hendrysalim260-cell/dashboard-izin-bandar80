@@ -12,7 +12,7 @@ import { Pencil } from "lucide-react";
 import { useEditStaff } from "@/hooks/use-edit-staff";
 import type { Staff } from "@shared/schema";
 
-const JABATAN_OPTIONS = ["CS", "CS LINE", "KAPTEN", "KASIR"];
+const JABATAN_OPTIONS = ["CS LINE", "CS LIVE CHAT", "KAPTEN", "KASIR"];
 
 interface EditStaffDialogProps {
   staff: Staff;
